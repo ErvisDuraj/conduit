@@ -294,15 +294,8 @@ where
     >;
     fn new_service(&self) -> Self::Future {
         let s = self.inner.new_service();
-        // This weird dance is so that the closure doesn't have to
-        // capture `self` and can just be a `fn` (so the `Map`)
-        // can be returned unboxed.
-        if self.was_absolute_form {
-            s.map(|inner| NormalizeUri::new(inner, true))
-        } else {
-            s.map(|inner| NormalizeUri::new(inner, false))
-        }
-
+        let was_absolute_form = self.was_absolute_form;
+        s.map(|inner| NormalizeUri::new(inner, was_absolute_form))
     }
 }
 
